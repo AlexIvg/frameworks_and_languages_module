@@ -10,7 +10,7 @@ Critique of Server/Client prototype
 ### Overview
 ()
 
-### (name of Issue 1)
+### (name of Issue 1)...
 
 (A code snippet example demonstrating the issue)
 (Explain why this pattern is problematic - 40ish words)
