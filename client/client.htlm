@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link id="favicon" rel="shortcut icon" type="image/png" href="data:image/png;base64,....==" />
+    <title>RSPV App</title>
+    <style>
+        /* Add your styles here if needed */
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>RSVP App</h1>
+    <div id="app">
+
+        <h2>Attend</h2>
+        <form @submit.prevent="addItem">
+            <input name="name" v-model="item.name" placeholder="name">
+            <input name="notes" v-model="item.notes" placeholder="Notes: i.e. dietary requirements">
+            <button data-action="addItem">RSVP</button>
+        </form>
+
+        <h2>Responses</h2>
+        <ul>
+            <li v-for="item in items" :key="item.id">
+                <span data-field="id">{{item.id}}</span>
+                <span data-field="name">{{item.name}}</span>
+                <span data-field="notes">{{item.notes}}</span>
+                <button data-action="delete" @click="deleteItem(item.id)">Remove</button>
+            </li>
+        </ul>
+
+    </div>
+    <script type="module">
+        import { createApp } from 'vue'
+
+        const urlAPI = 'http://localhost:8000'; // Update with your server URL
+
+        const RootComponent = {
+            data() {
+                return {
+                    item: {
+                        id: '',
+                        name: '',
+                        notes: '',
+                    },
+                    items: [],
+                }
+            },
+            created() {
+                this.clearInput()
+                this.updateItems()
+            },
+            methods: {
+                updateItems() {
+                    fetch(`${urlAPI}/item`, {})
+                        .then(response => response.json())
+                        .then(json => { this.items = json })
+                        .catch(err => console.error(err))
+                },
+                clearInput() {
+                    this.item = {
+                        id: Math.random(),
+                        name: '',
+                        notes: '',
+                    };
+                },
+                addItem() {
+                    fetch(`${urlAPI}/item`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(this.item),
+                    })
+                        .then(response => response.json())
+                        .then(() => this.clearInput())
+                        .then(() => this.updateItems())
+                        .catch(err => console.error(err));
+                },
+                deleteItem(id) {
+                    fetch(`${urlAPI}/item/${id}`, {
+                        method: 'DELETE',
+                    })
+                        .then(() => this.updateItems())
+                        .catch(err => console.error(err));
+                }
+            },
+        }
+
+        const app = createApp(RootComponent)
+        const vm = app.mount('#app')
+    </script>
+</body>
+</html>
