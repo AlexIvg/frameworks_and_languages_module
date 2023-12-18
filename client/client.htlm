@@ -1,12 +1,19 @@
+<!-- The document type and HTML structure -->
 <!DOCTYPE html>
 <html>
+
 <head>
+    <!-- Meta information, including character set and favicon -->
     <meta charset="utf-8" />
     <link id="favicon" rel="shortcut icon" type="image/png" href="data:image/png;base64,....==" />
     <title>RSPV App</title>
+
+    <!-- Style section for adding custom styles if needed -->
     <style>
         /* Add your styles here if needed */
     </style>
+
+    <!-- Import map for JavaScript modules -->
     <script type="importmap">
         {
             "imports": {
@@ -15,10 +22,13 @@
         }
     </script>
 </head>
+
 <body>
+    <!-- Main content of the application -->
     <h1>RSVP App</h1>
     <div id="app">
 
+        <!-- Form section for adding attendees -->
         <h2>Attend</h2>
         <form @submit.prevent="addItem">
             <input name="name" v-model="item.name" placeholder="name">
@@ -26,8 +36,10 @@
             <button data-action="addItem">RSVP</button>
         </form>
 
+        <!-- List section for displaying responses -->
         <h2>Responses</h2>
         <ul>
+            <!-- Loop through items and display details -->
             <li v-for="item in items" :key="item.id">
                 <span data-field="id">{{item.id}}</span>
                 <span data-field="name">{{item.name}}</span>
@@ -37,12 +49,18 @@
         </ul>
 
     </div>
+
+    <!-- JavaScript section using Vue.js for dynamic behavior -->
     <script type="module">
+        // Importing Vue.js createApp function
         import { createApp } from 'vue'
 
+        // API URL for server communication
         const urlAPI = 'http://localhost:8000'; // Update with your server URL
 
+        // Vue component definition
         const RootComponent = {
+            // Data section for maintaining state
             data() {
                 return {
                     item: {
@@ -53,17 +71,22 @@
                     items: [],
                 }
             },
+            // Lifecycle hook for component creation
             created() {
+                // Initialize input and fetch items from the server
                 this.clearInput()
                 this.updateItems()
             },
+            // Methods section for defining component behavior
             methods: {
+                // Method to fetch items from the server
                 updateItems() {
                     fetch(`${urlAPI}/item`, {})
                         .then(response => response.json())
                         .then(json => { this.items = json })
                         .catch(err => console.error(err))
                 },
+                // Method to clear input fields
                 clearInput() {
                     this.item = {
                         id: Math.random(),
@@ -71,6 +94,7 @@
                         notes: '',
                     };
                 },
+                // Method to add a new item
                 addItem() {
                     fetch(`${urlAPI}/item`, {
                         method: 'POST',
@@ -82,6 +106,7 @@
                         .then(() => this.updateItems())
                         .catch(err => console.error(err));
                 },
+                // Method to delete an item by ID
                 deleteItem(id) {
                     fetch(`${urlAPI}/item/${id}`, {
                         method: 'DELETE',
@@ -92,8 +117,10 @@
             },
         }
 
+        // Create a Vue app and mount it to the specified element
         const app = createApp(RootComponent)
         const vm = app.mount('#app')
     </script>
 </body>
+
 </html>
